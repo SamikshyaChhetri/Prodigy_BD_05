@@ -6,6 +6,7 @@ import { prisma } from "../register/controller.js";
 export const loginController = async (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
+  console.log(req.query);
   const findUser = await prisma.user.findFirst({
     where: {
       email,

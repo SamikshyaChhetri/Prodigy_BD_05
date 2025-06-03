@@ -98,7 +98,19 @@ export const createListingController = async (req, res) => {
 };
 export const getlistingsController = async (req, res) => {
   //getting all listings
-  const all_list = await prisma.listing.findMany();
+  const query = req.query.search;
+
+  // console.log(query);
+  const all_list = await prisma.listing.findMany({
+    where: {
+      OR: [
+        { city: { contains: query } },
+        { country: { contains: query } },
+        { street: { contains: query } },
+        { type: { contains: query } },
+      ],
+    },
+  });
   return res.status(200).send({
     success: true,
     data: all_list,
