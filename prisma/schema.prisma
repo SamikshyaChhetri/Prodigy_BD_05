@@ -1,0 +1,80 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model user {
+  id          String        @id @default(cuid())
+  name        String
+  email       String
+  password    String
+  address     String
+  phone       String
+  token       token[]
+  avatar      String
+  listing     listing[]
+  review      review[]
+  reservation reservation[]
+  otp         otp[]
+}
+
+model token {
+  id     String @id @default(cuid())
+  token  String
+  userId String @unique
+  user   user   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model listing {
+  id          String        @id @default(cuid())
+  city        String
+  street      String
+  country     String
+  zipcode     String
+  type        String
+  description String
+  rating      Int           @default(0)
+  price       String
+  noOfVehicle String
+  ownerId     String
+  owner       user          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  photo       String        @default("https://placehold.co/600x400") @db.VarChar(255)
+  review      review[]
+  reservation reservation[]
+}
+
+model review {
+  id         String  @id @default(cuid())
+  rating     Int
+  comment    String
+  reviewerId String
+  reviewer   user    @relation(fields: [reviewerId], references: [id], onDelete: Cascade)
+  listingId  String
+  listing    listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+}
+
+model reservation {
+  id         String   @id @default(cuid())
+  reserverId String
+  listingId  String
+  date       DateTime
+  reserver   user     @relation(fields: [reserverId], references: [id], onDelete: Cascade)
+  listing    listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+}
+
+model otp {
+  id     String @id @default(cuid())
+  otp    String
+  userId String
+  user   user   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
